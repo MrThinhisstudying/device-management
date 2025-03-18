@@ -10,8 +10,9 @@ import {
   deleteEquipment,
   downloadReportFile,
   Equipment,
-} from '../services/equipmentService';
-import EquipmentForm from './EquipmentForm'; // Component dùng chung cho form thêm/sửa
+} from '../../services/equipmentService';
+import { EquipmentForm } from "@/app/components/forms/EquipmentForm";
+ // Component dùng chung cho form thêm/sửa
 
 // Hàm khởi tạo giá trị Equipment ban đầu
 const initialEquipment: Equipment = {
@@ -34,7 +35,15 @@ const initialEquipment: Equipment = {
 };
 
 const EquipmentList: React.FC = () => {
-  const [equipments, setEquipments] = useState<Equipment[]>([]);
+  const [equipments, setEquipments] = useState<Equipment>({
+    name: "",
+    type: "",
+    manufacturer: "",
+    serialNumber: "",
+    purchaseDate: "",
+    location: "",
+    notes: "", // Nếu không bắt buộc, có thể bỏ qua
+  });
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [currentEquipment, setCurrentEquipment] = useState<Equipment>(initialEquipment);
@@ -58,9 +67,8 @@ const EquipmentList: React.FC = () => {
       setLoading(false);
     }
   };
-
+ 
   const handleAddEquipment = async (equipment: Equipment) => {
-    // Kiểm tra các trường bắt buộc
     if (!equipment.name || !equipment.code || !equipment.purpose ||
         !equipment.operation_scope || !equipment.manufacture_country ||
         !equipment.manufacture_year || !equipment.usage_start_year || equipment.user === null) {
@@ -73,10 +81,11 @@ const EquipmentList: React.FC = () => {
       setCurrentEquipment(initialEquipment);
       fetchEquipmentData();
     } catch (error) {
-      const errorMsg = error.response?.data
-        ? JSON.stringify(error.response.data)
-        : 'Có lỗi khi thêm thiết bị!';
-      setError(errorMsg);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Có lỗi khi thêm thiết bị!');
+      }
       console.error('Error adding equipment:', error);
     }
   };
@@ -93,11 +102,12 @@ const EquipmentList: React.FC = () => {
       setOpenEditDialog(false);
       fetchEquipmentData();
     } catch (error) {
-      const errorMsg = error.response?.data
-        ? JSON.stringify(error.response.data)
-        : 'Có lỗi khi cập nhật thiết bị!';
-      setError(errorMsg);
-      console.error('Error updating equipment:', error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Có lỗi khi cập nhật thiết bị!');
+      }
+      console.error('Error adding equipment:', error);
     }
   };
 
@@ -108,11 +118,12 @@ const EquipmentList: React.FC = () => {
         await deleteEquipment(id);
         fetchEquipmentData();
       } catch (error) {
-        const errorMsg = error.response?.data
-          ? JSON.stringify(error.response.data)
-          : 'Có lỗi khi xóa thiết bị!';
-        setError(errorMsg);
-        console.error('Error deleting equipment:', error);
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError('Có lỗi khi xóa thiết bị!');
+        }
+        console.error('Error adding equipment:', error);
       }
     }
   };
@@ -128,11 +139,12 @@ const EquipmentList: React.FC = () => {
       link.click();
       link.remove();
     } catch (error) {
-      const errorMsg = error.response?.data
-        ? JSON.stringify(error.response.data)
-        : 'Có lỗi khi tải báo cáo!';
-      setError(errorMsg);
-      console.error('Error downloading report:', error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Có lỗi khi tải xuống file!');
+      }
+      console.error('Error adding equipment:', error);
     }
   };
 
